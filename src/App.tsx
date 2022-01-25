@@ -1,26 +1,66 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Contact from "./contact/contact";
+import emailjs from "emailjs-com";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+type Mystate = {
+  from_name: string;
+  from_email: string;
+  subject: string;
+  message: string;
 }
 
-export default App;
+export default class App extends React.Component {
+  state: Mystate = {
+    from_name: '',
+    from_email: '',
+    subject: '',
+    message: ''
+  }
+
+
+  submit = (e: any) => {
+    e.preventDefault()
+
+    emailjs.sendForm(
+      'service_id', 'template_id', e.target, 'user_id')
+      .then((result: any) => {
+        console.log('4');
+
+        this.reset()
+        console.log(result.text);
+      }, (error: any) => {
+        console.log('4');
+
+        console.log(error.text);
+      });
+
+  }
+
+  reset = () => {
+    this.setState({
+      from_name: '',
+      from_email: '',
+      subject: '',
+      message: ''
+    })
+  }
+
+  change = (e: any) => {
+    this.setState({
+      [e.target.name]: e.target.value
+    })
+  }
+
+  render() {
+    return (
+      <div className="flex flex-col text-gray-700">
+        <div className=' m-auto py-10'>
+          <h1 className='text-xl font-bold'>Contact</h1>
+        </div>
+        <div className=' m-auto'>
+          <Contact change={this.change} submit={this.submit} {...this.state} />
+        </div>
+      </div>);
+  }
+}
